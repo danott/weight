@@ -6,7 +6,7 @@ require "dotenv"
 require "./fitbit"
 
 Dotenv.load
-YEAR = 2015
+YEAR = 2016
 
 def communicate(message)
   print "#{message}..."
@@ -21,7 +21,7 @@ task :import, [:year] do |_, args|
 
   communicate "Importing data from Fitbit" do
     responses = (1..12).map do |month|
-      date = Date.new(args.year, month, 1)
+      date = Date.new(args.year.to_i, month, 1)
       fitbit.get(
         "https://api.fitbit.com/1/user/-/body/log/weight/date/#{date}/#{date.end_of_month}.json",
         headers: { "Accept-Language": "en_US" }
@@ -41,7 +41,7 @@ task :export, [:year] do |_, args|
 
   communicate "Exporting data to Google sheets" do
     google = GoogleDrive.saved_session("./.google_token.json")
-    worksheet = google.spreadsheet_by_title("Average Weight #{args.year}").worksheet_by_title("fitbit")
+    worksheet = google.spreadsheet_by_title("Average Weight #{args.year.to_i}").worksheet_by_title("fitbit")
     measurements = JSON.parse(File.read("./.measurements.json"))
 
     every_day = Date.parse(measurements.keys.min)..Date.parse(measurements.keys.max)
