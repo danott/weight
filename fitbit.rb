@@ -1,6 +1,10 @@
 require "oauth2"
 
 class Fitbit
+  def self.authorization
+    Base64.encode64(ENV["FITBIT_CLIENT_ID"] + ":" + ENV["FITBIT_CLIENT_SECRET"]).chomp
+  end
+
   def self.saved_session(filename)
     client = OAuth2::Client.new(
       ENV["FITBIT_CLIENT_ID"],
@@ -25,17 +29,15 @@ class Fitbit
       )
       puts url
       print "Visit the oauth URL, and input the code: "
-      code = gets
+      code = gets.chomp
       token = client.auth_code.get_token(
-        code.chomp,
+        code,
         grant_type: "authorization_code",
         redirect_uri: "http://fitbit.dev/oauth/callback",
-        headers: {
-          Authorization: "Basic " + Base64.encode64(ENV["FITBIT_CLIENT_ID"] + ":" + ENV["FITBIT_CLIENT_SECRET"]).chomp,
-        }
+        headers: { Authorization: "Basic #{authorization}" }
       )
     elsif token.expired?
-      token = token.refresh!
+      token = token.refresh!(headers: { Authorization: "Basic #{authorization}" })
     end
 
     File.write(filename, JSON.pretty_generate(token.to_hash))
