@@ -16,10 +16,10 @@ end
 
 desc "Import data from Fitbit"
 task :import, [:year] do |_, args|
+  fitbit = Fitbit.saved_session("./.fitbit_token.json")
   args.with_defaults(year: YEAR)
 
   communicate "Importing data from Fitbit" do
-    fitbit = Fitbit.saved_session("./.fitbit_token.json")
     responses = (1..12).map do |month|
       date = Date.new(args.year, month, 1)
       fitbit.get(

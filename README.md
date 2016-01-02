@@ -8,10 +8,13 @@ sheet for charting in the way described in the source article.
 ## Setup
 
 1. Copy [this template Google sheet](https://docs.google.com/spreadsheets/d/13NUMpIpHKumFRGzayDIIfoXYVscvh1WsFG2Sf5fDkyo/edit?usp=sharing) with the name "Average Weight #{YEAR}"
-2. Create an app at https://dev.fitbit.com, and save the client id and client secret into a file named `.env`
+2. Create an app at https://dev.fitbit.com.
+  1. For the `Callback URL`, use `http://danott.co/weight/callback.html` (Hosted by [GitHub Pages](https://github.com/danott/weight/blob/gh-pages/callback.html))
+  2. Store the client id and client secret into a file named `.env` (See `.env.sample`)
 3. `bundle install`
+4. `rake`
 
-## Usage
+## Other Usage
 
 ```
 rake -T

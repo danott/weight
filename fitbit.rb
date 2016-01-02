@@ -25,15 +25,17 @@ class Fitbit
       url = client.auth_code.authorize_url(
         scope: "weight",
         expires_in: 2592000,
-        redirect_uri: "http://fitbit.dev/oauth/callback",
+        redirect_uri: "http://danott.co/weight/callback.html",
       )
-      puts url
-      print "Visit the oauth URL, and input the code: "
+
+      puts "Authenticate with Fitbit."
+      puts "1. Copy the URL below, and visit it in your browser.\n\n#{url}\n\n"
+      print "2. Enter the code: "
       code = gets.chomp
       token = client.auth_code.get_token(
         code,
         grant_type: "authorization_code",
-        redirect_uri: "http://fitbit.dev/oauth/callback",
+        redirect_uri: "http://danott.co/weight/callback.html",
         headers: { Authorization: "Basic #{authorization}" }
       )
     elsif token.expired?
