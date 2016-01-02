@@ -1,0 +1,41 @@
+<html>
+  <head>
+    <style>
+      body {
+        background: white;
+        color: black;
+        font-family: sans-serif;
+        font: caption;
+        font-size: 20px;
+        font-weight: 400;
+        line-height: 1.5;
+        max-width: 40rem;
+        margin: 8rem auto;
+        padding: 1rem;
+        text-align: center;
+      }
+
+      #code {
+        background: white;
+        width: 100%;
+        font-size: 1rem;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <p>
+      Copy this code and paste it into your console prompt
+    </p>
+    <input id="code" readonly />
+
+    <script>
+      (function() {
+        var code = window.location.search.match(/code=(.*)&?/)[1];
+        var input = document.getElementById("code");
+        input.value = code;
+        input.select();
+      })()
+    </script>
+  </body>
+</html>
