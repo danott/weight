@@ -13,8 +13,6 @@ YEAR = 2015
 google = GoogleDrive.saved_session("./.google_token.json")
 fitbit = Fitbit.saved_session("./.fitbit_token.json")
 
-worksheet = google.spreadsheet_by_title("Average Weight").worksheet_by_title("fitbit")
-
 responses = (1..12).map do |month|
   date = Date.new(YEAR, month, 1)
   fitbit.get(
@@ -31,7 +29,7 @@ measurements = responses.reduce({}) do |memo, response|
   )
 end
 
-every_day = Date.new(YEAR, 1, 1)..Date.current
+every_day = Date.new(YEAR, 1, 1)..Date.parse(measurements.keys.max)
 
 last = measurements[measurements.keys.min]
 filled = every_day.reduce([]) do |memo, date|
@@ -39,9 +37,9 @@ filled = every_day.reduce([]) do |memo, date|
   memo + [[date.to_s, last]]
 end
 
+worksheet = google.spreadsheet_by_title("Average Weight").worksheet_by_title("fitbit")
 filled.each_with_index do |(date, weight), i|
   worksheet[i + 1, 1] = date
   worksheet[i + 1, 2] = weight
 end
-
 worksheet.save
