@@ -25,7 +25,7 @@ class Fitbit
       url = client.auth_code.authorize_url(
         scope: "weight",
         expires_in: 2592000,
-        redirect_uri: "http://danott.co/weight/callback.html",
+        redirect_uri: "https://danott.co/weight/callback.html",
       )
 
       puts "Authenticate with Fitbit."
@@ -35,7 +35,7 @@ class Fitbit
       token = client.auth_code.get_token(
         code,
         grant_type: "authorization_code",
-        redirect_uri: "http://danott.co/weight/callback.html",
+        redirect_uri: "https://danott.co/weight/callback.html",
         headers: { Authorization: "Basic #{authorization}" }
       )
     elsif token.expired?
