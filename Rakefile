@@ -6,7 +6,7 @@ require "dotenv"
 require "./fitbit"
 
 Dotenv.load
-YEAR = 2016
+YEAR = 2017
 
 def communicate(message)
   print "#{message}..."
