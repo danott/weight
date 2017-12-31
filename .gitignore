@@ -1,5 +1,4 @@
 .env
 .fitbit_token.json
 .google_token.json
-.measurements.json
-.measurements.filled.json
+.measurements.*.yaml
