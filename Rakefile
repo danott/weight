@@ -36,13 +36,11 @@ task :import, [:year] do |_, args|
   end
 end
 
-desc "Export data to Google sheets"
-task :export, [:year] do |_, args|
+desc "Transform data, backfilling missing days"
+task :transform, [:year] do |_, args|
   args.with_defaults(year: YEAR)
 
-  communicate "Exporting data to Google sheets" do
-    google = GoogleDrive.saved_session("./.google_token.json")
-    worksheet = google.spreadsheet_by_title("Average Weight #{args.year.to_i}").worksheet_by_title("fitbit")
+  communicate "Transforming data" do
     measurements = JSON.parse(File.read("./.measurements.json"))
 
     every_day = Date.parse(measurements.keys.min)..Date.parse(measurements.keys.max)
@@ -52,6 +50,19 @@ task :export, [:year] do |_, args|
       last = measurements[date.to_s] || last
       memo + [[date.to_s, last]]
     end
+
+    File.write("./.measurements.filled.json", JSON.pretty_generate(filled))
+  end
+end
+
+desc "Export data to Google sheets"
+task :export, [:year] do |_, args|
+  args.with_defaults(year: YEAR)
+
+  communicate "Exporting data to Google sheets" do
+    google = GoogleDrive.saved_session("./.google_token.json")
+    worksheet = google.spreadsheet_by_title("Average Weight #{args.year.to_i}").worksheet_by_title("fitbit")
+    filled = JSON.parse(File.read("./.measurements.filled.json"))
 
     filled.each_with_index do |(date, weight), i|
       worksheet[i + 1, 1] = date
@@ -63,4 +74,4 @@ task :export, [:year] do |_, args|
 end
 
 desc "Import data from Fitbit and export it to Google sheets"
-task :default, [:year] => %i(import export)
+task :default, [:year] => %i(import transform export)
