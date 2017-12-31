@@ -3,6 +3,7 @@ require "google/api_client"
 require "google_drive"
 require "active_support/time"
 require "dotenv"
+require "pry"
 require "./fitbit"
 
 Dotenv.load
