@@ -27,11 +27,8 @@ class Series
 
   def weight_on(date)
     fail "Date outside of range" unless every_day.include?(date)
-    measurement = measurements.find { |m| m.date == date }
-    if measurement
-      measurement.weight
-    else
-      weight_on(date - 1.day)
+    fetch(date) do
+      assumed_weight_on(date)
     end
   end
 
@@ -40,6 +37,35 @@ class Series
     begin_date = measurements.first.date
     end_date = measurements.last.date
     @every_day = begin_date..end_date
+  end
+
+  def fetch(date)
+    measurement = measurements.find { |m| m.date == date }
+    return measurement.weight if measurement
+    yield date
+  end
+
+  private
+
+  def assumed_weight_on(date)
+    fail "Weight is actually known on this date" if dates.include?(date)
+    fail "Date outside of range" unless every_day.include?(date)
+    left_boundary = date
+    right_boundary = date
+    left_boundary = left_boundary - 1 until dates.include?(left_boundary)
+    right_boundary = right_boundary + 1 until dates.include?(right_boundary)
+    difference = fetch(right_boundary) - fetch(left_boundary)
+    range = left_boundary..right_boundary
+    step = difference / (range.to_a.size - 1)
+    gap_measurements = range.each_with_index.map do |d, i|
+      weight = fetch(left_boundary) + (step * i)
+      Measurement.new(date: d, weight: weight.round(1))
+    end
+    Series.new(gap_measurements).fetch(date)
+  end
+
+  def dates
+    measurements.map(&:date)
   end
 end
 
@@ -89,6 +115,10 @@ task :export, [:year] do |_, args|
 
     worksheet.save
   end
+end
+
+task :play do
+  binding.pry
 end
 
 desc "Import data from Fitbit and export it to Google sheets"
