@@ -7,7 +7,7 @@ require "pry"
 require "./fitbit"
 
 Dotenv.load
-YEAR = 2017
+YEAR = 2018
 
 class Measurement
   attr_reader :date, :weight
