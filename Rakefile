@@ -40,9 +40,12 @@ class Series
   end
 
   def fetch(date)
-    measurement = measurements.find { |m| m.date == date }
-    return measurement.weight if measurement
-    yield date
+    found = measurements.select { |m| m.date == date }
+    if found.any?
+      found.map(&:weight).reduce(&:+) / found.size
+    else
+      yield date
+    end
   end
 
   private
